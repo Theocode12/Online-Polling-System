@@ -1,98 +1,140 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🗳️ Online Poll System Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 🚀 Overview
+The **Online Poll System Backend** is a real-time, scalable voting system that allows users to create polls, vote, and view live results. Built with **Node.js, Express.js, MySQL, and WebSockets**, this project simulates a real-world polling system where users can engage in interactive voting while ensuring data integrity and high performance.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🎯 Project Goals
+1. **API Development**: Provide secure and scalable APIs for:
+   - Poll creation with multiple options.
+   - User authentication and authorization.
+   - Voting with validation to prevent duplicate votes.
+   - Fetching poll results in real-time.
+  
+2. **Database Optimization**:
+   - Efficiently structure data in **MySQL** for real-time queries.
+   - Use indexes and foreign keys for performance tuning.
+  
+3. **Live Updates via WebSockets**:
+   - Ensure instant updates for the latest poll results.
+   - Enable users to see votes update dynamically.
 
-## Description
+4. **API Documentation**:
+   - Fully document all endpoints using **Swagger**.
+   - Host interactive API documentation at `/api/docs`.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 🛠️ Technologies Used  
+- **Node.js + Express.js** – Backend framework for handling API requests.  
+- **MySQL** – Relational database for storing poll data.  
+- **Redis** – Used for:  
+  - Caching poll results for faster queries.  
+  - Storing active WebSocket connections.  
+  - Rate limiting API requests.  
+- **WebSockets (Socket.io)** – Real-time communication for live vote updates.  
+- **JWT Authentication** – Secure user authentication.  
+- **Swagger** – API documentation.  
+- **Docker** – Containerized deployment for easy setup.  
 
+---
+
+## 🏗️ Entity Relationship Diagram (ERD)
+The system is structured around four main entities:
+
+![ERD Diagram](./docs/media/online-poll-erd.png)  
+
+### 📌 Key Tables:
+- **Users**: Stores user credentials.
+- **Polls**: Represents polls created by users.
+- **Poll Options**: Holds options related to each poll.
+- **Votes**: Tracks votes cast by users.
+
+## 🔥 Key Features
+
+### ✅ User Authentication (JWT-based)
+- Users must **sign up** and **log in** to create polls or vote.
+- Authentication is managed using **JWT tokens**.
+
+### 📊 Poll Management
+- Users can create polls with multiple options.
+- Each poll has a **title**, **description**, **creation date**, and an **expiry date**.
+
+### 🎟️ Voting System
+- Users can cast votes, ensuring **no duplicate votes** per poll.
+- **Validation checks** are implemented to maintain integrity.
+
+### 📡 Real-time Voting Updates
+- **WebSockets** stream the latest voting data live.
+- Users can view vote updates in **real-time** without refreshing.
+
+### 🌍 Public Access to Results
+- Anyone can view poll results **without authentication**.
+- The results update dynamically via WebSockets.
+
+### 📜 API Documentation
+- All API endpoints are documented with **Swagger**.
+- The documentation is accessible at **`/api/docs`**.
+
+
+## ⚙️ Installation & Setup (Dockerized)  
+
+### 1️⃣ Clone the Repository  
 ```bash
-$ npm install
+git clone https://github.com/your-username/online-poll-system.git
+cd online-poll-system
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+### 2️⃣ Set Up Environment Variables  
+Create a **.env** file in the root directory with:  
+```env
+DATABASE_HOST=db
+DATABASE_USER=root
+DATABASE_PASSWORD=yourpassword
+DATABASE_NAME=poll_system
+JWT_SECRET=your-secret-key
+PORT=5000
 ```
 
-## Run tests
-
+### 3️⃣ Run the Application with Docker  
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker-compose up --build
 ```
 
-## Deployment
+This will:  
+✅ **Set up MySQL** in a container.  
+✅ **Run the Node.js backend** inside a container.  
+✅ Automatically apply **database migrations**.  
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 4️⃣ Verify It’s Running  
+Once started, you should see:  
+- **API running at:** `http://localhost:3000`  
+- **Swagger API docs at:** `http://localhost:3000/api`  
+- **MySQL running inside Docker**  
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
+## 🔌 API Endpoints
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|---------------|
+| POST   | `/api/auth/register` | Register a new user | ❌ No |
+| POST   | `/api/auth/login` | Log in and get a token | ❌ No |
+| POST   | `/api/polls` | Create a new poll | ✅ Yes |
+| GET    | `/api/polls` | Get all polls | ❌ No |
+| GET    | `/api/polls/:id` | Get a specific poll | ❌ No |
+| POST   | `/api/polls/:id/vote` | Vote on a poll | ✅ Yes |
+| GET    | `/api/polls/:id/results` | Get poll results | ❌ No |
+| GET    | `/api/docs` | View API documentation | ❌ No |
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 📡 WebSocket Events
+- **`polls/live`** → Broadcasts live poll updates.
 
-## Resources
+## 🏁 Next Steps
+- Implement **admin controls** for managing polls.
+- Optimize WebSocket handling for scalability.
+- Deploy to **AWS/GCP/DigitalOcean**.
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🤝 Contributing
+Contributions are welcome! Please fork the repo and submit a PR.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 📜 License
+MIT License © 2025 Maduagwu Valentine / Collab.
