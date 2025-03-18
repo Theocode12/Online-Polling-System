@@ -76,7 +76,7 @@ The system is structured around four main entities:
 - The documentation is accessible at **`/api/docs`**.
 
 
-## ⚙️ Installation & Setup (Dockerized)  
+## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the Repository  
 ```bash
@@ -87,15 +87,15 @@ cd online-poll-system
 ### 2️⃣ Set Up Environment Variables  
 Create a **.env** file in the root directory with:  
 ```env
-DATABASE_HOST=db
-DATABASE_USER=root
-DATABASE_PASSWORD=yourpassword
-DATABASE_NAME=poll_system
 JWT_SECRET=your-secret-key
-PORT=5000
 ```
 
-### 3️⃣ Run the Application with Docker  
+```node
+npm install
+npm run start:dev
+```
+
+### 3️⃣ Run the Application with Docker  (Upcoming)
 ```bash
 docker-compose up --build
 ```
