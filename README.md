@@ -107,8 +107,8 @@ This will:
 
 ### 4️⃣ Verify It’s Running  
 Once started, you should see:  
-- **API running at:** `http://localhost:5000`  
-- **Swagger API docs at:** `http://localhost:5000/api/docs`  
+- **API running at:** `http://localhost:3000`  
+- **Swagger API docs at:** `http://localhost:3000/api`  
 - **MySQL running inside Docker**  
 
 ---
@@ -127,7 +127,6 @@ Once started, you should see:
 
 ## 📡 WebSocket Events
 - **`polls/live`** → Broadcasts live poll updates.
-- **`vote/cast`** → Sends real-time vote updates.
 
 ## 🏁 Next Steps
 - Implement **admin controls** for managing polls.

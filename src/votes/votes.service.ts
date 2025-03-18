@@ -9,17 +9,37 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vote } from './entities/vote.entity';
 import { User } from 'src/users/entities/user.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { VoteCreatedEvent } from './events/votes.created.event';
+import { VoteDeletedEvent } from './events/votes.deleted.event';
 
 @Injectable()
 export class VotesService {
   constructor(
     @InjectRepository(Vote)
     private voteRepository: Repository<Vote>,
+    private eventEmitter: EventEmitter2
   ) {}
 
+  getRepository() {
+    return this.voteRepository;
+  }
+
   async create(createVoteDto: CreateVoteDto, user: User) {
-    const vote = this.voteRepository.create({ ...createVoteDto, user: user });
-    return await this.voteRepository.save(vote);
+    let vote = this.voteRepository.create({ ...createVoteDto, user: user });
+
+    vote = await this.voteRepository.save(vote).then((savedVote) => {
+      return savedVote;
+    });
+
+    vote = await this.findOneOrFail(vote.id, ['user', 'pollOption']);
+
+    const voteCreatedEvent = new VoteCreatedEvent()
+    voteCreatedEvent.pollId = vote.pollOption.pollId;
+    voteCreatedEvent.pollOptionId = vote.pollOptionId;
+    this.eventEmitter.emit('vote.created',voteCreatedEvent);
+
+    return vote;
   }
 
   async findAll() {
@@ -46,7 +66,7 @@ export class VotesService {
   }
 
   async remove(id: string, user: any) {
-    const vote = await this.findOneOrFail(id, ['user']).catch(() => {
+    const vote = await this.findOneOrFail(id, ['user', 'pollOption']).catch(() => {
       throw new NotFoundException('Vote not found');
     });
 
@@ -56,6 +76,14 @@ export class VotesService {
       );
     }
 
-    return await this.voteRepository.delete(id);
+    
+    const voteDeletedEvent = new VoteDeletedEvent()
+    voteDeletedEvent.pollId = vote.pollOption.pollId;
+    voteDeletedEvent.pollOptionId = vote.pollOptionId;
+
+    return this.voteRepository.delete(id).then(() => {
+      this.eventEmitter.emit('vote.deleted', voteDeletedEvent);
+      return { message: 'Vote deleted successfully' };
+    });
   }
 }

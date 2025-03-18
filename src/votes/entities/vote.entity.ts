@@ -31,7 +31,7 @@ export class Vote {
   @Column('uuid', { nullable: false })
   userId: string;
 
-  @ManyToOne(() => PollOption, (pollOption) => pollOption.votesObj)
+  @ManyToOne(() => PollOption, (pollOption) => pollOption.votes)
   pollOption: PollOption;
 
   @ManyToOne(() => User, (User) => User.votes)

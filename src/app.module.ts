@@ -12,9 +12,17 @@ import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { VotesModule } from './votes/votes.module';
 import { Vote } from './votes/entities/vote.entity';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppCacheModule } from './cache/cache.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({isGlobal: true}),
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production',
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -25,6 +33,8 @@ import { Vote } from './votes/entities/vote.entity';
       entities: [User, Poll, PollOption, Vote],
       synchronize: true,
     }),
+    EventEmitterModule.forRoot(),
+    AppCacheModule,
     UsersModule,
     PollsModule,
     PollOptionsModule,

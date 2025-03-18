@@ -18,11 +18,8 @@ export class PollOption {
   @Column('varchar', { length: 100 })
   title: string;
 
-  @Column('varchar', { length: 500 })
+  @Column('varchar', { length: 500 , nullable: true})
   description: string;
-
-  @Column('int', { default: 0 })
-  votes: number;
 
   @Column('datetime')
   @CreateDateColumn()
@@ -39,5 +36,5 @@ export class PollOption {
   poll: Poll;
 
   @OneToMany(() => Vote, (vote) => vote.pollOption, { cascade: true })
-  votesObj: Vote[];
+  votes: Vote[];
 }

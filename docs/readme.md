@@ -1,98 +1,134 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# **Technical Documentation: Online Polling System**  
+**Version:** 1.0  
+**Author:** Maduagwu Valentine  
+**Date:** 18th March 2023  
+**STATUS:** IN PROGRESS
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## **1. Introduction**  
+### **1.1 Overview**  
+The **Online Polling System** is a web application designed to facilitate user-driven polls with real-time vote updates. Users can create polls, vote on different options, and view live results.  
 
-## Description
+The system is built with **Next.js**, utilizing a **MySQL database** with **TypeORM** for database management. Authentication is handled using **JWT (JSON Web Tokens)**, and **WebSockets** enable real-time vote streaming.  
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### **1.2 Objectives**  
+- Provide a seamless user experience for polling.  
+- Ensure efficient handling of votes with caching (Memory Cache or Redis).  
+- Stream live vote updates using WebSockets.  
+- Maintain security with JWT-based authentication.  
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## **2. System Architecture**  
 
-## Compile and run the project
+### **2.1 Tech Stack**  
+| Component         | Technology Used |
+|------------------|----------------|
+| **Frontend**     | Next.js |
+| **Backend**      | NestJS |
+| **Database**     | MySQL (TypeORM) |
+| **Authentication** | JWT |
+| **Caching**      | Memory Cache / Redis |
+| **Real-time Updates** | WebSockets |
+| **Deployment**   | docker |
 
-```bash
-# development
-$ npm run start
+### **2.2 Entity-Relationship Diagram (ERD)**  
+The system follows a **relational database model** with the following main entities:  
+- **Users**: Stores user credentials and authentication data.  
+- **Polls**: Represents created polls, linked to users.  
+- **Poll Options**: Contains available options for each poll.  
+- **Votes**: Stores user votes for specific poll options.  
 
-# watch mode
-$ npm run start:dev
+📌 **ERD Diagram:**  
+![ERD Diagram](./media/online-poll-erd.png)   
 
-# production mode
-$ npm run start:prod
-```
+---
 
-## Run tests
+## **3. Authentication & Security**  
+### **3.1 User Authentication**  
+- **JWT (JSON Web Token) Authentication** is used for session management.  
+- On login, the server issues a signed JWT token, which the client uses for API requests.  
+- Tokens expire after a set period and must be refreshed for continued access.  
 
-```bash
-# unit tests
-$ npm run test
+### **3.2 Security Considerations**  
+- **Password Hashing:** Passwords are securely hashed using bcrypt.  
+- **JWT Best Practices:** Short-lived tokens with refresh token implementation.  
+- **Input Validation:** Prevents SQL Injection & XSS attacks.  
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
+## **4. Polling & Voting Logic**  
+### **4.1 Flow of a Vote**  
+- A **signed-in user** can vote on a poll.  
+- If a user has already voted:  
+  - If voting for the **same option**, a **conflict error** is raised.  
+  - If changing the vote, the **previous vote is deleted**, and a new vote is recorded.  
+- Every vote is **cached** (Memory Cache / Redis) before being persisted in the database.  
 
-## Deployment
+📌 **Voting Flowchart:**  
+![ERD Diagram](./media/votes_flow_chart.png)   
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### **4.2 Caching Strategy**  
+Votes can be cached using:  
+1. **Memory Cache** (for quick access within the same instance).  
+2. **Redis** (recommended for scalability & distributed systems).  
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### **4.3 WebSockets for Live Voting Updates**  
+- When a vote is cast or changed, an **event is triggered**.  
+- WebSockets broadcast real-time polling data to all connected users in a poll room.  
+- Ensures a smooth and interactive user experience.  
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## **5. Database Schema & API Endpoints**  
 
-## Resources
+### **5.1 Database Schema (Simplified)**  
+| Table | Description |
+|-------|------------|
+| **users** | Stores user information (email, password). |
+| **polls** | Contains poll details (title, description, created_at, expires_at). |
+| **poll_options** | Lists available voting options for each poll. |
+| **votes** | Stores user votes, tracking poll options selected. |
 
-Check out a few resources that may come in handy when working with NestJS:
+### **5.2 API Endpoints (Sample)**  
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `POST` | `/auth/register` | Register a new user |
+| `POST` | `/auth/login` | User authentication (JWT) |
+| `GET` | `/polls` | Fetch all polls |
+| `POST` | `/polls` | Create a new poll |
+| `GET` | `/polls/:id` | Get poll details |
+| `POST` | `/vote` | Cast a vote |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## **6. Design Decisions & Justifications**  
+### **6.1 Why Next.js?**  
+- **Challenge & Learning:** After working with Laravel, Express, and Django, I wanted to explore a new technology.  
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### **6.2 Why JWT for Authentication?**  
+- Stateless authentication allows easy scalability.  
+- Secure and widely used for API-based authentication.  
 
-## Stay in touch
+### **6.3 Why MySQL & TypeORM?**  
+- **MySQL:** Relational structure is ideal for structured polling data.  
+- **TypeORM:** Provides an abstraction layer for database management with NestJS.  
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### **6.4 Why WebSockets?**  
+- Needed for **real-time vote updates**.  
+- Ensures users in a poll room see instant changes.  
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## **7. Future Improvements**  
+- Implement OAuth authentication (Google).  
+- Add a background job processor for handling large vote updates efficiently.  
+- Implement a ranking system for poll popularity.  
+
+---
+
+## **8. Conclusion**  
+This document outlines the **technical architecture, design decisions, and implementation strategy** for the Online Polling System. It serves as a reference for backend development and future enhancements.  
+
+---
