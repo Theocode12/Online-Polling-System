@@ -15,6 +15,7 @@ import { CreatePollDto } from './dto/create-poll.dto';
 import { UpdatePollDto } from './dto/update-poll.dto';
 import { Public } from 'src/lib/decorators/public.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { DateTransformInterceptor } from 'src/lib/interceptors/date-transform.interceptor';
 
 @ApiBearerAuth()
 @Controller('polls')
@@ -22,6 +23,7 @@ export class PollsController {
   constructor(private readonly pollsService: PollsService) {}
 
   @Post()
+  @UseInterceptors(new DateTransformInterceptor(['expires_at']))
   create(@Body() createPollDto: CreatePollDto, @Request() req) {
     return this.pollsService.create(createPollDto, req.user);
   }

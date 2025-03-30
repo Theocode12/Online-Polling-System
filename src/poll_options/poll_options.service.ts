@@ -54,7 +54,7 @@ export class PollOptionsService {
     const pollOption = await this.findOneOrFail(id, ['poll', 'poll.user']).catch(() => {
         throw new NotFoundException('PollOption not found');
       });
-    
+    console.log(pollOption);
     if (pollOption.poll.user.id !== user.id) {
       throw new ForbiddenException(
         'You are not authorized to update this poll option',

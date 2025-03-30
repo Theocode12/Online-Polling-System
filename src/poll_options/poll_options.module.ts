@@ -9,5 +9,6 @@ import { PollsModule } from 'src/polls/polls.module';
   imports: [TypeOrmModule.forFeature([PollOption]), PollsModule],
   controllers: [PollOptionsController],
   providers: [PollOptionsService],
+  exports: [PollOptionsService]
 })
 export class PollOptionsModule {}

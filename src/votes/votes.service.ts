@@ -12,12 +12,14 @@ import { User } from 'src/users/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { VoteCreatedEvent } from './events/votes.created.event';
 import { VoteDeletedEvent } from './events/votes.deleted.event';
+import { PollOptionsService } from 'src/poll_options/poll_options.service';
 
 @Injectable()
 export class VotesService {
   constructor(
     @InjectRepository(Vote)
     private voteRepository: Repository<Vote>,
+    private pollOptionService: PollOptionsService,
     private eventEmitter: EventEmitter2
   ) {}
 
@@ -26,18 +28,18 @@ export class VotesService {
   }
 
   async create(createVoteDto: CreateVoteDto, user: User) {
-    let vote = this.voteRepository.create({ ...createVoteDto, user: user });
-
-    vote = await this.voteRepository.save(vote).then((savedVote) => {
-      return savedVote;
+    const pollOption = await this.pollOptionService.findOneOrFail(createVoteDto.pollOptionId).catch(() => {
+      throw new NotFoundException('Poll Option not found')
     });
 
-    vote = await this.findOneOrFail(vote.id, ['user', 'pollOption']);
-
-    const voteCreatedEvent = new VoteCreatedEvent()
-    voteCreatedEvent.pollId = vote.pollOption.pollId;
-    voteCreatedEvent.pollOptionId = vote.pollOptionId;
-    this.eventEmitter.emit('vote.created',voteCreatedEvent);
+    let vote = this.voteRepository.create({ ...createVoteDto, user, pollOption });
+    console.log(vote)
+    const voteCreatedEvent = new VoteCreatedEvent(vote.pollOption.pollId, vote.pollOptionId);
+    
+    vote = await this.voteRepository.save(vote).then((savedVote) => {
+      this.eventEmitter.emit('vote.created',voteCreatedEvent);
+      return savedVote;
+    });
 
     return vote;
   }
@@ -75,11 +77,8 @@ export class VotesService {
         'You are not authorized to delete this vote',
       );
     }
-
-    
-    const voteDeletedEvent = new VoteDeletedEvent()
-    voteDeletedEvent.pollId = vote.pollOption.pollId;
-    voteDeletedEvent.pollOptionId = vote.pollOptionId;
+  
+    const voteDeletedEvent = new VoteDeletedEvent(vote.pollOption.pollId, vote.pollOptionId)
 
     return this.voteRepository.delete(id).then(() => {
       this.eventEmitter.emit('vote.deleted', voteDeletedEvent);

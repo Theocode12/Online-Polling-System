@@ -9,25 +9,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Poll } from './entities/poll.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { BaseService } from 'src/lib/base.service';
 
 @Injectable()
-export class PollsService {
+export class PollsService extends BaseService<Poll> {
   constructor(
     @InjectRepository(Poll)
     private pollRepository: Repository<Poll>,
-  ) {}
-
-  async create(createPollDto: CreatePollDto, user: User) {
-    const poll = this.pollRepository.create({ ...createPollDto, user: user });
-    return await this.pollRepository.save(poll);
+  ) {
+    super(pollRepository);
   }
 
-  async findAll() {
-    return await this.pollRepository.find();
+  async create(createPollDto: CreatePollDto, user: User) {
+    return await super.createAndSave({ ...createPollDto, user: user })
+  }
+
+  async findAll(relations: string[] = []) {
+    return await super.findAll(relations);
   }
 
   async findOneOrFail(id: string, relations: string[] = []) {
-    return await this.pollRepository.findOneOrFail({ where: { id: id }, relations });
+    return await super.findOneOrFail(id, relations);
   }
 
   async update(id: string, updatePollDto: UpdatePollDto, user: User) {
@@ -39,8 +41,7 @@ export class PollsService {
       throw new ForbiddenException('You are not authorized to update this poll');
     }
   
-    await this.pollRepository.update(id, updatePollDto);
-    return this.pollRepository.findOneOrFail({ where: { id } });
+    return await super.updateAndReturn(id, updatePollDto);
   }
 
   async remove(id: string, user: any) {
@@ -54,6 +55,6 @@ export class PollsService {
       );
     }
 
-    return await this.pollRepository.delete(id);
+    return await super.delete(id);
   }
 }

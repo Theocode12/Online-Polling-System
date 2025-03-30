@@ -4,7 +4,7 @@ export class CreateVoteDto {
   @IsOptional()
   @IsString()
   @MaxLength(50)
-  description: string;
+  description? : string;
 
   @IsUUID()
   pollOptionId: string;

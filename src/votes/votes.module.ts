@@ -9,9 +9,14 @@ import { Poll } from 'src/polls/entities/poll.entity';
 import { VoteCreatedListener } from './listeners/votes.created.listener';
 import { VoteDeletedListener } from './listeners/votes.deleted.listener';
 import { PollsModule } from 'src/polls/polls.module';
+import { PollOptionsModule } from 'src/poll_options/poll_options.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Vote, PollOption, Poll]), AppCacheModule, PollsModule],
+  imports: [
+    TypeOrmModule.forFeature([Vote, PollOption, Poll]), 
+    AppCacheModule, 
+    PollsModule, 
+    PollOptionsModule],
   controllers: [VotesController],
   providers: [VotesService, VoteCreatedListener, VoteDeletedListener],
 })

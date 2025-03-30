@@ -1,4 +1,4 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class CreatePollDto {
   @IsString()
@@ -8,6 +8,6 @@ export class CreatePollDto {
   @IsString()
   description?: string;
 
-  @IsDateString()
-  expires_at: string;
+  @IsDate()
+  expires_at: Date;
 }
